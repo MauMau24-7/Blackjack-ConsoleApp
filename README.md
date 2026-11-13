@@ -1,2 +1,2 @@
 # Blackjack-ConsoleApp-
-Blackjack project that I made. It uses the console
+Blackjack project I'm working on that uses the console.
