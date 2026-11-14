@@ -9,24 +9,32 @@ namespace Blackjack
     internal class Player
     {
         public string Name;
-        public Hand Hand;
-        public ChipStack ChipStack;
+        public List<Hand> Hands;
+        public ChipStack Chips;
 
         public Player(string name, int startAmount = Settings.DefaultStartAmount)
         {
             Name = name;
-            Hand = new Hand();
-            ChipStack = ChipStack.AmountToStack(startAmount);
+            Hands = new List<Hand>();
+            Hands.Add(new Hand());
+            Chips = ChipStack.AmountToStack(startAmount);
         }
 
         public ChipStack Bet(int amount)
         {
-            ArgumentOutOfRangeException.ThrowIfNegative(amount, "Amount can't be negative.");
-            if (!ChipStack.HasEnoughChips(amount)) throw new InvalidOperationException("Not enough chips.");
+            ArgumentOutOfRangeException.ThrowIfNegative(amount);
+            if (!Chips.HasEnoughChips(amount)) throw new InvalidOperationException("Not enough chips.");
 
-            var (taken, _) = ChipStack.RemoveUpTo(amount);
+            var (taken, _) = Chips.RemoveUpTo(amount);
 
             return taken;
+        }
+
+        public void CollectPayout(ChipStack bet, HandResult result)
+        {
+            int value = bet.GetTotalValue();
+            int payout = Payout.Calculate(result, value);
+            Chips.AddStack(ChipStack.AmountToStack(payout));
         }
     }
 }

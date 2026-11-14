@@ -11,8 +11,9 @@ namespace Blackjack
     /// </summary>
     internal class Hand
     {
-        private List<Card> cardsInHand = new List<Card>();
-        public bool isDone = false;
+        private List<Card> CardsInHand = new List<Card>();
+        public bool IsDone = false;
+        public ChipStack BetStack = new ChipStack();
 
         /// <summary>
         /// Calculates the Blackjack score of a hand.
@@ -25,7 +26,7 @@ namespace Blackjack
             int points = 0;
             int aces = 0;   // number of Aces still counted as 11
 
-            foreach (Card card in cardsInHand)
+            foreach (Card card in CardsInHand)
             {
                 if (card.Value >= 2 && card.Value <= 10)
                 {
@@ -42,9 +43,9 @@ namespace Blackjack
                 }
             }
 
-            // Over 21? Downgrade Aces from 11 to 1 (subtract 10) one at a time
+            // Over Settings.BlackjackScore? Downgrade Aces from 11 to 1 (subtract 10) one at a time
             // until the hand is safe or no Aces are left.
-            while (points > 21 && aces > 0)
+            while (points > Settings.BlackjackScore && aces > 0)
             {
                 points -= 10;
                 aces--;
@@ -59,7 +60,7 @@ namespace Blackjack
         /// <param name="card">The card to add.</param>
         public void AddCard(Card card)
         {
-            cardsInHand.Add(card);
+            CardsInHand.Add(card);
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace Blackjack
         /// <param name="card">The card to remove.</param>
         public void RemoveCard(Card card)
         {
-            cardsInHand.Remove(card);
+            CardsInHand.Remove(card);
         }
 
         /// <summary>
@@ -76,7 +77,7 @@ namespace Blackjack
         /// </summary>
         public void ClearCards()
         {
-            cardsInHand.Clear();
+            CardsInHand.Clear();
         }
 
         /// <summary>
@@ -85,13 +86,7 @@ namespace Blackjack
         /// <returns>The cards as a formatted string.</returns>
         public string ToText()
         {
-            string cardsAsString = "";
-
-            foreach (Card card in cardsInHand)
-            {
-                cardsAsString += card.ToText() + ", ";          // Read about String.Join() in the future
-            }
-            return cardsAsString;
+            return string.Join(", ", CardsInHand.Select(card => card.ToText()));
         }
 
         /// <summary>
@@ -101,7 +96,61 @@ namespace Blackjack
         /// <returns>The card at the specified index</returns>
         public Card GetCard(int index)
         {
-            return cardsInHand[index];
+            return CardsInHand[index];
+        }
+
+        /// <summary>
+        /// Determines the outcome of the player's hand compared to the dealer's hand according to standard blackjack
+        /// rules.
+        /// </summary>
+        /// <param name="dealer">The dealer's hand to compare against.</param>
+        /// <param name="isSplitHand">true if the hand is a split hand; otherwise, false.</param>
+        /// <returns>A HandResult value indicating win, loss, push, blackjack, or busted.</returns>
+        public HandResult GetResultAgainst(Hand dealer, bool isSplitHand)
+        {
+            int points = GetPoints();
+            int dealerPoints = dealer.GetPoints();
+            bool isBlackjack = !isSplitHand && points == Settings.BlackjackScore && CardsInHand.Count == 2;
+            bool dealerBlackjack = dealerPoints == Settings.BlackjackScore && dealer.CardsInHand.Count == 2;
+
+            if (points > Settings.BlackjackScore)
+            {
+                return HandResult.Busted;
+            }
+            if (isBlackjack && dealerBlackjack)
+            {
+                return HandResult.Push;
+            }
+            if (isBlackjack && !dealerBlackjack)
+            {
+                return HandResult.Blackjack;
+            }
+            if (!isBlackjack && dealerBlackjack)
+            {
+                return HandResult.Loss;
+            }
+            if (dealerPoints > Settings.BlackjackScore)
+            {
+                return HandResult.Win;
+            }
+            if (points > dealerPoints)
+            {
+                return HandResult.Win;
+            }
+            if (points < dealerPoints)
+            {
+                return HandResult.Loss;
+            }
+            return HandResult.Push;
+        }
+
+        /// <summary>
+        /// Count's the cards of the hand.
+        /// </summary>
+        /// <returns>The number of cards in hand.</returns>
+        public int CardCount()
+        {
+            return CardsInHand.Count;
         }
     }
 }

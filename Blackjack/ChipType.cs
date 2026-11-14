@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace Blackjack
 {
+    /// <summary>
+    /// Specifies the available chip denominations used in the game.
+    /// </summary>
     internal enum ChipType
     {
-        White = 1,      // Rest (approx. 1%)
-        Red = 5,        // 4%
-        Blue = 10,      // 5%
-        Green = 25,     // 15%
-        Black = 100,    // 35%
-        Purple = 500    // 40%
+        White = 1,
+        Red = 5,
+        Blue = 10,
+        Green = 25,
+        Black = 100,
+        Purple = 500
     }
 }
