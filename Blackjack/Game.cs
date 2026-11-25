@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Blackjack
+﻿namespace Blackjack
 {
     /// <summary>
     /// Manages the flow of a Blackjack game, including player and dealer actions, betting, dealing, and round
@@ -243,8 +237,8 @@ namespace Blackjack
         /// <returns>true if the player chooses to play again; otherwise, false.</returns>
         private bool AskPlayAgain()
         {
-            if (Settings.BetsOn && Player.Chips.GetTotalValue() <= 0) 
-            { 
+            if (Settings.BetsOn && Player.Chips.GetTotalValue() <= 0)
+            {
                 Console.WriteLine("You are out of chips");
                 return false;
             }
@@ -252,7 +246,7 @@ namespace Blackjack
             string? playAgainAnswer = Console.ReadLine()?.ToLower();
             return !(playAgainAnswer == "n" || playAgainAnswer == "no");
         }
-        
+
         /// <summary>
         /// Displays the outcome of a hand, indicating whether the player has won, lost, pushed, or achieved blackjack.
         /// </summary>
