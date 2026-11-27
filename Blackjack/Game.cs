@@ -240,6 +240,7 @@
             if (Settings.BetsOn && Player.Chips.GetTotalValue() <= 0)
             {
                 Console.WriteLine("You are out of chips");
+                Settings.Pause(5000);
                 return false;
             }
             Console.WriteLine("Do you want to play again? ([Y]es or [N]o)");
